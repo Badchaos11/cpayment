@@ -1,7 +1,5 @@
 package models
 
-import "fmt"
-
-func adder() {
-	fmt.Println("Hello")
+func adder(x int) int {
+	return (x + x)
 }
