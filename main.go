@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"log"
 	"net/http"
 	"os"
@@ -17,13 +16,6 @@ func main() {
 
 	tr := handlers.NewTransactions(l)
 
-	Db, err := sql.Open("postgres", "host=localhost dbname=testdb user=user password=secret sslmode=disable")
-
-	if err != nil {
-		log.Fatal("Cannot connect to databaase")
-	}
-	defer Db.Close()
-
 	sm := mux.NewRouter()
 
 	getRouter := sm.Methods("GET").Subrouter()
@@ -35,7 +27,7 @@ func main() {
 	postRouter.HandleFunc("/create", tr.CreateTransaction)
 
 	patchRouter := sm.Methods("PATCH").Subrouter()
-	patchRouter.HandleFunc("/reject/{id}", tr.RejectTransactions)
+	patchRouter.HandleFunc("/reject/{id}", tr.RejectTransaction)
 	patchRouter.HandleFunc("/changest/{id}", tr.ChangeTransactionStatus)
 
 	s := &http.Server{
