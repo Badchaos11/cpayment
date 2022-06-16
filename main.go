@@ -2,17 +2,16 @@ package main
 
 import (
 	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/Badchaos11/cpayment/handlers"
+	"github.com/gorilla/mux"
 )
 
 func main() {
-	fmt.Println("Hello world!")
 
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
 
@@ -25,8 +24,19 @@ func main() {
 	}
 	defer Db.Close()
 
-	sm := http.NewServeMux()
-	sm.Handle("/", tr)
+	sm := mux.NewRouter()
+
+	getRouter := sm.Methods("GET").Subrouter()
+	getRouter.HandleFunc("/onetrbid/{id}", tr.GetOneById)
+	getRouter.HandleFunc("/alltrbid/{id_user}", tr.GetAllById)
+	getRouter.HandleFunc("/alltrbem/{email}", tr.GetAllByEmail)
+
+	postRouter := sm.Methods("POST").Subrouter()
+	postRouter.HandleFunc("/create", tr.CreateTransaction)
+
+	patchRouter := sm.Methods("PATCH").Subrouter()
+	patchRouter.HandleFunc("/reject/{id}", tr.RejectTransactions)
+	patchRouter.HandleFunc("/changest/{id}", tr.ChangeTransactionStatus)
 
 	s := &http.Server{
 		Addr:         ":9090",           // configure the bind address
