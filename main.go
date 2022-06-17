@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"time"
 
 	"github.com/Badchaos11/cpayment/handlers"
@@ -20,15 +22,17 @@ func main() {
 
 	getRouter := sm.Methods("GET").Subrouter()
 	getRouter.HandleFunc("/onetrbid/{id}", tr.GetOneById)
-	getRouter.HandleFunc("/alltrbid/{id_user}", tr.GetAllById)
+	getRouter.HandleFunc("/alltrbid/{userid}", tr.GetAllById)
 	getRouter.HandleFunc("/alltrbem/{email}", tr.GetAllByEmail)
 
 	postRouter := sm.Methods("POST").Subrouter()
 	postRouter.HandleFunc("/create", tr.CreateTransaction)
 
-	patchRouter := sm.Methods("PATCH").Subrouter()
-	patchRouter.HandleFunc("/reject/{id}", tr.RejectTransaction)
-	patchRouter.HandleFunc("/changest/{id}", tr.ChangeTransactionStatus)
+	puthRouter := sm.Methods("PUT").Subrouter()
+	puthRouter.HandleFunc("/reject/{id}", tr.RejectTransaction)
+
+	protectedRouter := sm.Methods("PUT").Subrouter()
+	protectedRouter.HandleFunc("/changest/{id}", tr.ChangeTransactionStatus)
 
 	s := &http.Server{
 		Addr:         ":9090",           // configure the bind address
@@ -48,4 +52,14 @@ func main() {
 			os.Exit(1)
 		}
 	}()
+
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	signal.Notify(c, os.Kill)
+
+	sig := <-c
+	log.Println("Got signal:", sig)
+
+	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	s.Shutdown(ctx)
 }
