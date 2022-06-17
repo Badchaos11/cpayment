@@ -35,6 +35,7 @@ func (t *Transactions) GetOneById(w http.ResponseWriter, r *http.Request) {
 func (t *Transactions) GetAllById(w http.ResponseWriter, r *http.Request) {
 	t.l.Println("Handle GET All Transactions by User ID")
 	vars := mux.Vars(r)
+	t.l.Println(vars)
 	id, err := strconv.Atoi(vars["userid"])
 	if err != nil {
 		log.Fatal("Invalid User ID entered")
@@ -47,8 +48,8 @@ func (t *Transactions) GetAllById(w http.ResponseWriter, r *http.Request) {
 func (t *Transactions) GetAllByEmail(w http.ResponseWriter, r *http.Request) {
 	t.l.Println("Handle GET All Transaction by User EMail")
 	vars := mux.Vars(r)
+	t.l.Println(vars)
 	email := vars["email"]
-
 	trs := models.AllTransactionsEm(email)
 	fmt.Println(trs)
 	return

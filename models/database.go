@@ -30,7 +30,7 @@ func (t *Transaction) FromJSON(r io.Reader) error {
 	return e.Decode(t)
 }
 
-type Transactions []*Transaction
+type Transactions []Transaction
 
 func (t *Transactions) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
@@ -59,16 +59,16 @@ func OneTransaction(id int) []TransactionStatus {
 	return result
 }
 
-func AllTrasactionsId(id int) Transactions {
+func AllTrasactionsId(userid int) Transactions {
 	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
 	defer db.Close()
 
-	result := []*Transaction{}
+	result := []Transaction{}
 
-	res, err := db.Query("SELECT `status` FROM `transactions` WHERE `userid` = ?", id)
+	res, err := db.Query("SELECT * FROM `transactions` WHERE `userid` = ?", userid)
 	if err != nil {
 		log.Fatal("No such user or transactions")
 	}
@@ -76,7 +76,7 @@ func AllTrasactionsId(id int) Transactions {
 	for res.Next() {
 		var tr Transaction
 		err = res.Scan(&tr.Id, &tr.Userid, &tr.Price, &tr.Currency, &tr.Status)
-		result = append(result, &tr)
+		result = append(result, tr)
 	}
 	defer res.Close()
 
@@ -90,9 +90,9 @@ func AllTransactionsEm(email string) Transactions {
 	}
 	defer db.Close()
 
-	result := []*Transaction{}
+	result := []Transaction{}
 
-	res, err := db.Query("SELECT `status` FROM `transactions` WHERE `email` = '?", email)
+	res, err := db.Query("SELECT * FROM `transactions` WHERE `email` = '?", email)
 	if err != nil {
 		log.Fatal("No such user or transactions")
 	}
@@ -100,7 +100,7 @@ func AllTransactionsEm(email string) Transactions {
 	for res.Next() {
 		var tr Transaction
 		err = res.Scan(&tr.Id, &tr.Email, &tr.Price, &tr.Currency, &tr.Status)
-		result = append(result, &tr)
+		result = append(result, tr)
 	}
 	defer res.Close()
 
