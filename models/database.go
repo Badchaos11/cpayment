@@ -132,7 +132,7 @@ func Reject(t *Transaction) {
 	}
 	defer db.Close()
 
-	res, err := db.Exec("UPDATE `transactions` SET `status` = ? WHERE `id` = ?", t.Status, t.Id)
+	res, err := db.Exec("UPDATE transactions SET status = ? WHERE id = ?", t.Status, t.Id)
 	if err != nil {
 		panic(err)
 	}

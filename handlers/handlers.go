@@ -87,8 +87,13 @@ func (t *Transactions) RejectTransaction(w http.ResponseWriter, r *http.Request)
 	if err != nil {
 		log.Fatal("Panic")
 	}
+	t.l.Println(d)
 	st := "REJECTED"
-	id := int(d[0])
+	sid := string(d)
+	id, err := strconv.Atoi(sid)
+	if err != nil {
+		log.Fatal("Panic")
+	}
 	tr := models.Transaction{Id: id, Status: st}
 	models.Reject(&tr)
 }
