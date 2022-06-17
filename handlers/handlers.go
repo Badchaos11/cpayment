@@ -59,27 +59,42 @@ func (t *Transactions) GetAllByEmail(w http.ResponseWriter, r *http.Request) {
 
 func (t *Transactions) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	t.l.Println("Handle POST Create new transaction")
-	tr := r.Context().Value(KeyTransaction{}).(models.Transaction)
+	d, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("Panic")
+	}
+	rs := strings.Split(string(d), "&")
+	uid, err := strconv.Atoi(rs[0])
+	if err != nil {
+		log.Fatal("Invalid ID")
+	}
+	em := rs[1]
+	p, err := strconv.ParseFloat(rs[2], 4)
+	if err != nil {
+		log.Fatal("Invalid Amount of Money")
+	}
+	cr := rs[3]
+	pr := float32(p)
+	tr := models.Transaction{Userid: uid, Email: em, Price: pr, Currency: cr}
 	t.l.Println(tr)
-
 	models.AddTransaction(&tr)
 	return
 }
 
 func (t *Transactions) RejectTransaction(w http.ResponseWriter, r *http.Request) {
-	t.l.Println("Handle PATCH reject transaction by ID")
+	t.l.Println("Handle PUT reject transaction by ID")
 	d, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal("Panic")
 	}
-
-	t.l.Println(d[0])
-	models.Reject(int(d[0]))
-
+	st := "REJECTED"
+	id := int(d[0])
+	tr := models.Transaction{Id: id, Status: st}
+	models.Reject(&tr)
 }
 
 func (t *Transactions) ChangeTransactionStatus(w http.ResponseWriter, r *http.Request) {
-	t.l.Println("Handle PATCH Change transaction status by System")
+	t.l.Println("Handle PUT Change transaction status by System")
 	d, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		log.Fatal("Panic")

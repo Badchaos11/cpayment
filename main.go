@@ -27,9 +27,7 @@ func main() {
 
 	postRouter := sm.Methods("POST").Subrouter()
 	postRouter.HandleFunc("/create", tr.CreateTransaction)
-
-	puthRouter := sm.Methods("PUT").Subrouter()
-	puthRouter.HandleFunc("/reject", tr.RejectTransaction)
+	postRouter.HandleFunc("/reject", tr.RejectTransaction)
 
 	protectedRouter := sm.Methods("PUT").Subrouter()
 	protectedRouter.HandleFunc("/changest", tr.ChangeTransactionStatus)

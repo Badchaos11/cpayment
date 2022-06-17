@@ -125,14 +125,14 @@ func AddTransaction(t *Transaction) {
 	defer insert.Close()
 }
 
-func Reject(id int) {
+func Reject(t *Transaction) {
 	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
 	defer db.Close()
 
-	res, err := db.Exec("UPDATE transactions SET `status` = ? WHERE `id` = ?", "ОТМЕНЕН", id)
+	res, err := db.Exec("UPDATE `transactions` SET `status` = ? WHERE `id` = ?", t.Status, t.Id)
 	if err != nil {
 		panic(err)
 	}
@@ -146,7 +146,7 @@ func StatusChange(t *Transaction) {
 	}
 	defer db.Close()
 
-	res, err := db.Exec("UPDATE transactions SET `status` = ? WHERE `id` = ?", t.Status, t.Id)
+	res, err := db.Exec("UPDATE `transactions` SET `status` = ? WHERE `id` = ?", t.Status, t.Id)
 	if err != nil {
 		panic(err)
 	}
