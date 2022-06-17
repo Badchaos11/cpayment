@@ -37,20 +37,25 @@ func (t *Transactions) ToJSON(w io.Writer) error {
 	return e.Encode(t)
 }
 
-func OneTransaction(id int) TransactionStatus {
+func OneTransaction(id int) []TransactionStatus {
 	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
 	defer db.Close()
 
+	result := []TransactionStatus{}
+
 	res, err := db.Query("SELECT `status` FROM `transactions` WHERE `id` = ?", id)
 	if err != nil {
 		log.Fatal("No such transaction")
 	}
-	var result TransactionStatus
-	err = res.Scan(&result.Status)
-
+	for res.Next() {
+		var tr TransactionStatus
+		err = res.Scan(&tr.Status)
+		result = append(result, tr)
+	}
+	defer res.Close()
 	return result
 }
 
@@ -63,7 +68,7 @@ func AllTrasactionsId(id int) Transactions {
 
 	result := []*Transaction{}
 
-	res, err := db.Query("SELECT `status` FROM `transactions` WHERE `id_user` = ?", id)
+	res, err := db.Query("SELECT `status` FROM `transactions` WHERE `userid` = ?", id)
 	if err != nil {
 		log.Fatal("No such user or transactions")
 	}
@@ -123,7 +128,7 @@ func Reject(id int) {
 	}
 	defer db.Close()
 
-	res, err := db.Exec("UPDATE transactions SET status = ? WHERE id = ?", "ОТМЕНЕН", id)
+	res, err := db.Exec("UPDATE transactions SET `status` = ? WHERE `id` = ?", "ОТМЕНЕН", id)
 	if err != nil {
 		panic(err)
 	}
@@ -137,7 +142,7 @@ func StatusChange(t *Transaction) {
 	}
 	defer db.Close()
 
-	res, err := db.Exec("UPDATE transactions SET status = ? WHERE id = ?", t.Status, t.Id)
+	res, err := db.Exec("UPDATE transactions SET `status` = ? WHERE `id` = ?", t.Status, t.Id)
 	if err != nil {
 		panic(err)
 	}

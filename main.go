@@ -20,7 +20,7 @@ func main() {
 
 	sm := mux.NewRouter()
 
-	getRouter := sm.Methods("GET").Subrouter()
+	getRouter := sm.Methods(http.MethodGet).Subrouter()
 	getRouter.HandleFunc("/onetrbid/{id}", tr.GetOneById)
 	getRouter.HandleFunc("/alltrbid/{userid}", tr.GetAllById)
 	getRouter.HandleFunc("/alltrbem/{email}", tr.GetAllByEmail)

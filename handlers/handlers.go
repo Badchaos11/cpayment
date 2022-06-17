@@ -23,12 +23,13 @@ func NewTransactions(l *log.Logger) *Transactions {
 func (t *Transactions) GetOneById(w http.ResponseWriter, r *http.Request) {
 	t.l.Println("Handle GET Transaction by ID")
 	vars := mux.Vars(r)
+	t.l.Println(vars)
 	id, err := strconv.Atoi(vars["id"])
 	if err != nil {
 		log.Fatal("Invalid ID entered")
 	}
 	ot := models.OneTransaction(id)
-	fmt.Println(ot)
+	t.l.Println(ot)
 }
 
 func (t *Transactions) GetAllById(w http.ResponseWriter, r *http.Request) {
