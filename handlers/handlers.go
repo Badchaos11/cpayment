@@ -58,6 +58,7 @@ func (t *Transactions) GetAllByEmail(w http.ResponseWriter, r *http.Request) {
 func (t *Transactions) CreateTransaction(w http.ResponseWriter, r *http.Request) {
 	t.l.Println("Handle POST Create new transaction")
 	tr := r.Context().Value(KeyTransaction{}).(models.Transaction)
+	t.l.Println(tr)
 
 	models.AddTransaction(&tr)
 	return
@@ -65,12 +66,9 @@ func (t *Transactions) CreateTransaction(w http.ResponseWriter, r *http.Request)
 
 func (t *Transactions) RejectTransaction(w http.ResponseWriter, r *http.Request) {
 	t.l.Println("Handle PATCH reject transaction by ID")
-	vars := mux.Vars(r)
-	id, err := strconv.Atoi(vars["userid"])
-	if err != nil {
-		log.Fatal("Invalid User ID entered")
-	}
-	models.Reject(id)
+	tr := r.Context().Value(KeyTransaction{}).(models.Transaction)
+	t.l.Println(tr)
+	models.Reject(&tr)
 
 }
 

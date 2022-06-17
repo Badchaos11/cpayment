@@ -75,7 +75,7 @@ func AllTrasactionsId(userid int) Transactions {
 
 	for res.Next() {
 		var tr Transaction
-		err = res.Scan(&tr.Id, &tr.Userid, &tr.Price, &tr.Currency, &tr.Status)
+		err = res.Scan(&tr.Id, &tr.Userid, &tr.Email, &tr.Price, &tr.Currency, &tr.CreatedOn, &tr.UpdatedOn, &tr.Status)
 		result = append(result, tr)
 	}
 	defer res.Close()
@@ -92,14 +92,14 @@ func AllTransactionsEm(email string) Transactions {
 
 	result := []Transaction{}
 
-	res, err := db.Query("SELECT * FROM `transactions` WHERE `email` = '?", email)
+	res, err := db.Query("SELECT * FROM `transactions` WHERE `email` = ?", email)
 	if err != nil {
 		log.Fatal("No such user or transactions")
 	}
 
 	for res.Next() {
 		var tr Transaction
-		err = res.Scan(&tr.Id, &tr.Email, &tr.Price, &tr.Currency, &tr.Status)
+		err = res.Scan(&tr.Id, &tr.Userid, &tr.Email, &tr.Price, &tr.Currency, &tr.CreatedOn, &tr.UpdatedOn, &tr.Status)
 		result = append(result, tr)
 	}
 	defer res.Close()
@@ -121,14 +121,14 @@ func AddTransaction(t *Transaction) {
 	defer insert.Close()
 }
 
-func Reject(id int) {
+func Reject(t *Transaction) {
 	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
 	defer db.Close()
 
-	res, err := db.Exec("UPDATE transactions SET `status` = ? WHERE `id` = ?", "ОТМЕНЕН", id)
+	res, err := db.Exec("UPDATE transactions SET `status` = ? WHERE `id` = ?", "ОТМЕНЕН", t.Id)
 	if err != nil {
 		panic(err)
 	}

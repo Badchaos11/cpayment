@@ -20,7 +20,7 @@ func main() {
 
 	sm := mux.NewRouter()
 
-	getRouter := sm.Methods(http.MethodGet).Subrouter()
+	getRouter := sm.Methods("GET").Subrouter()
 	getRouter.HandleFunc("/onetrbid/{id}", tr.GetOneById)
 	getRouter.HandleFunc("/alltrbid/{userid}", tr.GetAllById)
 	getRouter.HandleFunc("/alltrbem/{email}", tr.GetAllByEmail)
@@ -29,10 +29,10 @@ func main() {
 	postRouter.HandleFunc("/create", tr.CreateTransaction)
 
 	puthRouter := sm.Methods("PUT").Subrouter()
-	puthRouter.HandleFunc("/reject/{id}", tr.RejectTransaction)
+	puthRouter.HandleFunc("/reject", tr.RejectTransaction)
 
 	protectedRouter := sm.Methods("PUT").Subrouter()
-	protectedRouter.HandleFunc("/changest/{id}", tr.ChangeTransactionStatus)
+	protectedRouter.HandleFunc("/changest", tr.ChangeTransactionStatus)
 
 	s := &http.Server{
 		Addr:         ":9090",           // configure the bind address
