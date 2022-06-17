@@ -14,7 +14,7 @@ import (
 
 func main() {
 
-	l := log.New(os.Stdout, "onstanta Payment Gateway", log.LstdFlags)
+	l := log.New(os.Stdout, "Constanta Payment Gateway ", log.LstdFlags)
 
 	tr := handlers.NewTransactions(l)
 
