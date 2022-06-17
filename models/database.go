@@ -25,6 +25,10 @@ type TransactionStatus struct {
 	Status string `json:"status"`
 }
 
+type TransactionReject struct {
+	Id uint32 `json:"id"`
+}
+
 func (t *Transaction) FromJSON(r io.Reader) error {
 	e := json.NewDecoder(r)
 	return e.Decode(t)
@@ -121,14 +125,14 @@ func AddTransaction(t *Transaction) {
 	defer insert.Close()
 }
 
-func Reject(t *Transaction) {
+func Reject(id int) {
 	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
 	defer db.Close()
 
-	res, err := db.Exec("UPDATE transactions SET `status` = ? WHERE `id` = ?", "ОТМЕНЕН", t.Id)
+	res, err := db.Exec("UPDATE transactions SET `status` = ? WHERE `id` = ?", "ОТМЕНЕН", id)
 	if err != nil {
 		panic(err)
 	}

@@ -2,9 +2,11 @@ package handlers
 
 import (
 	"fmt"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/Badchaos11/cpayment/models"
 	"github.com/gorilla/mux"
@@ -66,15 +68,31 @@ func (t *Transactions) CreateTransaction(w http.ResponseWriter, r *http.Request)
 
 func (t *Transactions) RejectTransaction(w http.ResponseWriter, r *http.Request) {
 	t.l.Println("Handle PATCH reject transaction by ID")
-	tr := r.Context().Value(KeyTransaction{}).(models.Transaction)
-	t.l.Println(tr)
-	models.Reject(&tr)
+	d, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("Panic")
+	}
+
+	t.l.Println(d[0])
+	models.Reject(int(d[0]))
 
 }
 
 func (t *Transactions) ChangeTransactionStatus(w http.ResponseWriter, r *http.Request) {
 	t.l.Println("Handle PATCH Change transaction status by System")
-	tr := r.Context().Value(KeyTransaction{}).(models.Transaction)
+	d, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("Panic")
+	}
+
+	rs := strings.Split(string(d), "&")
+	st := rs[0]
+	id, err := strconv.Atoi(rs[1])
+	if err != nil {
+		log.Fatal("Invalid ID")
+	}
+
+	tr := models.Transaction{Id: id, Status: st}
 
 	models.StatusChange(&tr)
 }
