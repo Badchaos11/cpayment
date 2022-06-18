@@ -104,7 +104,7 @@ func (t *Transactions) ChangeTransactionStatus(w http.ResponseWriter, r *http.Re
 	if err != nil {
 		log.Fatal("Panic")
 	}
-
+	t.l.Println(d)
 	rs := strings.Split(string(d), "&")
 	st := rs[0]
 	id, err := strconv.Atoi(rs[1])
@@ -121,13 +121,15 @@ type KeyTransaction struct{}
 
 func (t *Transactions) MiddlewareAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		h := r.Header["Authorization"][1]
-		fmt.Println(h)
+		rh := r.Header
+		t.l.Println(rh)
+		h := r.Header["Authorization"][0]
+		t.l.Println(h)
 		if h != token {
 			log.Fatal("Invalid authorization header received")
 			return
 		}
-		log.Println("Token allowed, go to next handler")
+		t.l.Println("Token allowed, go to next handler")
 		next.ServeHTTP(w, r)
 	})
 }
