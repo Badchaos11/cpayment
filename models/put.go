@@ -7,7 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func Reject(t *Transaction) error {
+func Reject(t *Transaction) (bool, error) {
 	db, err := sql.Open("mysql", dbparams)
 	if err != nil {
 		log.Fatal("Connection to DB failed")
@@ -27,13 +27,13 @@ func Reject(t *Transaction) error {
 
 	if result[0].Status == "REJECTED" {
 		log.Println("Status cant be changed")
-		return err
+		return false, err
 	} else if result[0].Status == "SUCCESS" {
 		log.Println("Status cant be changed")
-		return err
+		return false, err
 	} else if result[0].Status == "UNSUCCESS" {
 		log.Println("Status cant be changed")
-		return err
+		return false, err
 	} else {
 		res, err := db.Exec("UPDATE transactions SET status = ? WHERE id = ?", t.Status, t.Id)
 		if err != nil {
@@ -41,7 +41,7 @@ func Reject(t *Transaction) error {
 		}
 		log.Println(res.RowsAffected())
 		log.Println("Транзакция успешно отменена")
-		return nil
+		return true, nil
 	}
 }
 

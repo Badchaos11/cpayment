@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -30,5 +31,8 @@ func (t *Transactions) CreateTransaction(w http.ResponseWriter, r *http.Request)
 	pr := float32(p)
 	tr := models.Transaction{Userid: uid, Email: em, Price: pr, Currency: cr}
 	t.l.Println(tr)
-	models.AddTransaction(&tr)
+	res := models.AddTransaction(&tr)
+	if res == true {
+		fmt.Fprint(w, "Транзакция успешно создана")
+	}
 }

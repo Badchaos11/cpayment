@@ -7,7 +7,7 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func AddTransaction(t *Transaction) {
+func AddTransaction(t *Transaction) bool {
 	db, err := sql.Open("mysql", dbparams)
 	if err != nil {
 		log.Fatal("Connection to DB failed")
@@ -20,4 +20,5 @@ func AddTransaction(t *Transaction) {
 	}
 	defer insert.Close()
 	log.Println("Транзакция успешно добавлена")
+	return true
 }

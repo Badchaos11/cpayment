@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -19,6 +20,7 @@ func (t *Transactions) GetOneById(w http.ResponseWriter, r *http.Request) {
 	}
 	ot := models.OneTransaction(id)
 	t.l.Println("Статус транзакции: ", ot[0].Status)
+	fmt.Fprint(w, "Статус транзакции: ", ot[0].Status)
 }
 
 func (t *Transactions) GetAllById(w http.ResponseWriter, r *http.Request) {
@@ -32,6 +34,7 @@ func (t *Transactions) GetAllById(w http.ResponseWriter, r *http.Request) {
 	trs := models.AllTrasactionsId(id)
 	for i := 0; i < len(trs); i++ {
 		t.l.Println(trs[i])
+		fmt.Fprint(w, "Данные транзакции: ", trs[i])
 	}
 }
 
@@ -43,5 +46,6 @@ func (t *Transactions) GetAllByEmail(w http.ResponseWriter, r *http.Request) {
 	trs := models.AllTransactionsEm(email)
 	for i := 0; i < len(trs); i++ {
 		t.l.Println(trs[i])
+		fmt.Fprint(w, "Данные транзакции: ", trs[i], " \n")
 	}
 }

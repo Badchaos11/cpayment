@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -24,7 +25,14 @@ func (t *Transactions) RejectTransaction(w http.ResponseWriter, r *http.Request)
 		log.Fatal("Panic")
 	}
 	tr := models.Transaction{Id: id, Status: st}
-	models.Reject(&tr)
+	res, err := models.Reject(&tr)
+	if err != nil {
+		t.l.Println("Что-то пошло не так")
+	}
+	if res == true {
+		t.l.Println("Транзакция успешно отменена")
+		fmt.Fprint(w, "Транзакция успешно отменена")
+	}
 }
 
 func (t *Transactions) ChangeTransactionStatusWS(w http.ResponseWriter, r *http.Request) {
@@ -48,8 +56,10 @@ func (t *Transactions) ChangeTransactionStatusWS(w http.ResponseWriter, r *http.
 	}
 	if res == 1 {
 		t.l.Println("Статус транзакции успешено установлен: SUCCESS")
+		fmt.Fprint(w, "Статус транзакции успешено установлен: SUCCESS")
 	} else if res == 2 {
 		t.l.Println("Статус транзакции успешно установлен: UNSUCCESS")
+		fmt.Fprint(w, "Статус транзакции успешно установлен: UNSUCCESS")
 	}
 }
 
@@ -75,7 +85,9 @@ func (t *Transactions) ChangeTransactionStatus(w http.ResponseWriter, r *http.Re
 	}
 	if res == 1 {
 		t.l.Println("Статус транзакции установлен: SUCCESS")
+		fmt.Fprint(w, "Статус транзакции установлен: SUCCESS")
 	} else if res == 2 {
 		t.l.Println("Статус транзакции установлен: UNSUCCESS")
+		fmt.Fprint(w, "Статус транзакции установлен: UNSUCCESS")
 	}
 }
