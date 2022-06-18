@@ -29,3 +29,17 @@
 7) /changestatvs - изменение статуса платежной системой. В запросе передается ID транзакции и статус, который должен быть установлен. По ID загружается запись из базы данных, у которой проверяется статус. Есл он имеет значение SUCCESS, UNSUCCESS, REJECTED - вернется ошибка что изменение невозможно. Если статус платежа NEW он будет изменен на SUCCES, UpdatedOn изменится автоматически (настройка поля в базе данных). Если статус платежа FAILED, то он будет изменен на UNSUCCESS, UpdatedON изменится автоматически (настройка поля в базе данных). Запрос должен предварительно пройти авторизацию. Для этого в заголовке запроса передается токен доступа. В данный момент реализовано просто как сравнение с каким-то сохраненным в коде значением. Возможно будет переведено на JWT авторизацию. Токен: 4hbkjdznfk3i27ecb1. Без токена будет выдана ошибка и запрос не будет выполнен.
 
    Запрос имеет следующий вид: curl http://localhost:9090/changestatvs -X PUT -d "SUCCESS" -d "1" -H "Authorization: 4hbkjdznfk3i27ecb1"
+   
+База данных имеет следующую структуру: 
+БД - MySQL;
+Название - constanta;
+Таблица - transactions;
+Поля:
+id - int, primary key, auto increment;
+userid - int;
+email - varchar;
+price - double;
+currency - varchar;
+createdon - datetime, по умолчанию current timestamp;
+updatedon - datetime, по умолчанию current timestamp, on update current timestamp;
+status - varchar;
