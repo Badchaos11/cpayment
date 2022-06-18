@@ -125,18 +125,41 @@ func AddTransaction(t *Transaction) {
 	defer insert.Close()
 }
 
-func Reject(t *Transaction) {
+func Reject(t *Transaction) error {
 	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
 	defer db.Close()
 
-	res, err := db.Exec("UPDATE transactions SET status = ? WHERE id = ?", t.Status, t.Id)
+	result := []TransactionStatus{}
+	check, err := db.Query("SELECT `status` FROM `transactions` WHERE `id` = ?", t.Id)
 	if err != nil {
-		panic(err)
+		log.Fatal("No such transaction")
 	}
-	fmt.Println(res.RowsAffected())
+	for check.Next() {
+		var tr TransactionStatus
+		err = check.Scan(&tr.Status)
+		result = append(result, tr)
+	}
+
+	if result[0].Status == "REJECTED" {
+		log.Println("Status cant be changed")
+		return err
+	} else if result[0].Status == "SUCCESS" {
+		log.Println("Status cant be changed")
+		return err
+	} else if result[0].Status == "UNSUCCESS" {
+		log.Println("Status cant be changed")
+		return err
+	} else {
+		res, err := db.Exec("UPDATE transactions SET status = ? WHERE id = ?", t.Status, t.Id)
+		if err != nil {
+			panic(err)
+		}
+		fmt.Println(res.RowsAffected())
+		return nil
+	}
 }
 
 func StatusChange(t *Transaction) {

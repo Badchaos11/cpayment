@@ -33,6 +33,7 @@ func main() {
 
 	protectedRouter := sm.Methods("PUT").Subrouter()
 	protectedRouter.HandleFunc("/changest", tr.ChangeTransactionStatus)
+	protectedRouter.Use(tr.MiddlewareAuth)
 
 	s := &http.Server{
 		Addr:         ":9090",           // configure the bind address

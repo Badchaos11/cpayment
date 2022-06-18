@@ -119,7 +119,7 @@ func (t *Transactions) ChangeTransactionStatus(w http.ResponseWriter, r *http.Re
 
 type KeyTransaction struct{}
 
-func MiddlewareAuth(next http.Handler) http.Handler {
+func (t *Transactions) MiddlewareAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h := r.Header["Authorization"][1]
 		fmt.Println(h)
