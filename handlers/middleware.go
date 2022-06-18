@@ -7,9 +7,9 @@ import (
 
 func (t *Transactions) MiddlewareAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		h := r.Header["Authorization"][0]
+		h := r.Header["Authorization"]
 		t.l.Println(h)
-		if h != token {
+		if h[0] != token {
 			log.Println("Invalid authorization header received")
 			return
 		}
