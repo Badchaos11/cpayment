@@ -2,9 +2,6 @@ package models
 
 import (
 	"database/sql"
-	"encoding/json"
-	"fmt"
-	"io"
 	"log"
 
 	_ "github.com/go-sql-driver/mysql"
@@ -29,20 +26,12 @@ type TransactionReject struct {
 	Id uint32 `json:"id"`
 }
 
-func (t *Transaction) FromJSON(r io.Reader) error {
-	e := json.NewDecoder(r)
-	return e.Decode(t)
-}
-
 type Transactions []Transaction
 
-func (t *Transactions) ToJSON(w io.Writer) error {
-	e := json.NewEncoder(w)
-	return e.Encode(t)
-}
+var dbparams string = "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta"
 
 func OneTransaction(id int) []TransactionStatus {
-	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
+	db, err := sql.Open("mysql", dbparams)
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
@@ -64,7 +53,7 @@ func OneTransaction(id int) []TransactionStatus {
 }
 
 func AllTrasactionsId(userid int) Transactions {
-	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
+	db, err := sql.Open("mysql", dbparams)
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
@@ -88,7 +77,7 @@ func AllTrasactionsId(userid int) Transactions {
 }
 
 func AllTransactionsEm(email string) Transactions {
-	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
+	db, err := sql.Open("mysql", dbparams)
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
@@ -112,7 +101,7 @@ func AllTransactionsEm(email string) Transactions {
 }
 
 func AddTransaction(t *Transaction) {
-	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
+	db, err := sql.Open("mysql", dbparams)
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
@@ -126,7 +115,7 @@ func AddTransaction(t *Transaction) {
 }
 
 func Reject(t *Transaction) error {
-	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
+	db, err := sql.Open("mysql", dbparams)
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
@@ -157,21 +146,51 @@ func Reject(t *Transaction) error {
 		if err != nil {
 			panic(err)
 		}
-		fmt.Println(res.RowsAffected())
+		log.Println(res.RowsAffected())
 		return nil
 	}
 }
 
-func StatusChange(t *Transaction) {
-	db, err := sql.Open("mysql", "badchaos:pe0038900@tcp(127.0.0.1:3306)/constanta")
+func StatusChange(t *Transaction) error {
+	db, err := sql.Open("mysql", dbparams)
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
 	defer db.Close()
 
-	res, err := db.Exec("UPDATE `transactions` SET `status` = ? WHERE `id` = ?", t.Status, t.Id)
+	result := []TransactionStatus{}
+	check, err := db.Query("SELECT `status` FROM `transactions` WHERE `id` = ?", t.Id)
 	if err != nil {
-		panic(err)
+		log.Fatal("No such transaction")
 	}
-	fmt.Println(res.RowsAffected())
+	for check.Next() {
+		var tr TransactionStatus
+		err = check.Scan(&tr.Status)
+		result = append(result, tr)
+	}
+
+	if result[0].Status == "REJECTED" {
+		log.Println("Status cant be changed")
+		return err
+	} else if result[0].Status == "SUCCESS" {
+		log.Println("Status cant be changed")
+		return err
+	} else if result[0].Status == "UNSUCCESS" {
+		log.Println("Status cant be changed")
+		return err
+	} else if result[0].Status == "NEW" {
+		res, err := db.Exec("UPDATE `transactions` SET `status` = ? WHERE `id` = ?", "SUCCES", t.Id)
+		if err != nil {
+			panic(err)
+		}
+		log.Println(res.RowsAffected())
+		return nil
+	} else {
+		res, err := db.Exec("UPDATE `transactions` SET `status` = ? WHERE `id` = ?", "UNSUCCESS", t.Id)
+		if err != nil {
+			panic(err)
+		}
+		log.Println(res.RowsAffected())
+		return nil
+	}
 }

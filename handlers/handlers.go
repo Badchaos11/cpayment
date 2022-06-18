@@ -121,8 +121,6 @@ type KeyTransaction struct{}
 
 func (t *Transactions) MiddlewareAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		rh := r.Header
-		t.l.Println(rh)
 		h := r.Header["Authorization"][0]
 		t.l.Println(h)
 		if h != token {
