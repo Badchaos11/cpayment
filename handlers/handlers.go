@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -31,7 +30,7 @@ func (t *Transactions) GetOneById(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Invalid ID entered")
 	}
 	ot := models.OneTransaction(id)
-	t.l.Println(ot)
+	t.l.Println("Статус транзакции: ", ot[0].Status)
 }
 
 func (t *Transactions) GetAllById(w http.ResponseWriter, r *http.Request) {
@@ -43,8 +42,9 @@ func (t *Transactions) GetAllById(w http.ResponseWriter, r *http.Request) {
 		log.Fatal("Invalid User ID entered")
 	}
 	trs := models.AllTrasactionsId(id)
-	fmt.Println(trs)
-	return
+	for i := 0; i < len(trs); i++ {
+		t.l.Println(trs[i])
+	}
 }
 
 func (t *Transactions) GetAllByEmail(w http.ResponseWriter, r *http.Request) {
@@ -53,8 +53,9 @@ func (t *Transactions) GetAllByEmail(w http.ResponseWriter, r *http.Request) {
 	t.l.Println(vars)
 	email := vars["email"]
 	trs := models.AllTransactionsEm(email)
-	fmt.Println(trs)
-	return
+	for i := 0; i < len(trs); i++ {
+		t.l.Println(trs[i])
+	}
 }
 
 func (t *Transactions) CreateTransaction(w http.ResponseWriter, r *http.Request) {
