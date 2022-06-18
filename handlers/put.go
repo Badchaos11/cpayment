@@ -52,7 +52,8 @@ func (t *Transactions) ChangeTransactionStatusWS(w http.ResponseWriter, r *http.
 
 	res, err := models.StatusChangeWS(&tr)
 	if err != nil {
-		t.l.Println("Status was not changed")
+		t.l.Println("Статус изменить невозможно")
+		fmt.Fprint(w, "Статус изменить невозможно")
 	}
 	if res == 1 {
 		t.l.Println("Статус транзакции успешено установлен: SUCCESS")
@@ -60,6 +61,9 @@ func (t *Transactions) ChangeTransactionStatusWS(w http.ResponseWriter, r *http.
 	} else if res == 2 {
 		t.l.Println("Статус транзакции успешно установлен: UNSUCCESS")
 		fmt.Fprint(w, "Статус транзакции успешно установлен: UNSUCCESS")
+	} else {
+		t.l.Println("Статус изменить невозможно")
+		fmt.Fprint(w, "Статус изменить невозможно")
 	}
 }
 
@@ -81,7 +85,8 @@ func (t *Transactions) ChangeTransactionStatus(w http.ResponseWriter, r *http.Re
 
 	res, err := models.StatusChange(&tr)
 	if err != nil {
-		t.l.Println("Status was not changed")
+		t.l.Println("Статус изменить невозможно")
+		fmt.Fprint(w, "Статус изменить невозможно")
 	}
 	if res == 1 {
 		t.l.Println("Статус транзакции установлен: SUCCESS")
@@ -89,5 +94,9 @@ func (t *Transactions) ChangeTransactionStatus(w http.ResponseWriter, r *http.Re
 	} else if res == 2 {
 		t.l.Println("Статус транзакции установлен: UNSUCCESS")
 		fmt.Fprint(w, "Статус транзакции установлен: UNSUCCESS")
+	} else {
+		t.l.Println("Статус изменить невозможно")
+		fmt.Fprint(w, "Статус изменить невозможно")
 	}
+
 }
