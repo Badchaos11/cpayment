@@ -98,6 +98,32 @@ func (t *Transactions) RejectTransaction(w http.ResponseWriter, r *http.Request)
 	models.Reject(&tr)
 }
 
+func (t *Transactions) ChangeTransactionStatusWS(w http.ResponseWriter, r *http.Request) {
+	t.l.Println("Handle PUT Change transaction status by System")
+	d, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Fatal("Panic")
+	}
+	t.l.Println(d)
+	sid := string(d)
+	id, err := strconv.Atoi(sid)
+	if err != nil {
+		log.Fatal("Panic")
+	}
+
+	tr := models.Transaction{Id: id}
+
+	res, err := models.StatusChangeWS(&tr)
+	if err != nil {
+		t.l.Println("Status was not changed")
+	}
+	if res == true {
+		t.l.Println("Статус транзакции успешено установлен: SUCCESS")
+	} else {
+		t.l.Println("Статус транзакции успешно установлен: UNSUCCESS")
+	}
+}
+
 func (t *Transactions) ChangeTransactionStatus(w http.ResponseWriter, r *http.Request) {
 	t.l.Println("Handle PUT Change transaction status by System")
 	d, err := ioutil.ReadAll(r.Body)
@@ -114,10 +140,16 @@ func (t *Transactions) ChangeTransactionStatus(w http.ResponseWriter, r *http.Re
 
 	tr := models.Transaction{Id: id, Status: st}
 
-	models.StatusChange(&tr)
+	res, err := models.StatusChange(&tr)
+	if err != nil {
+		t.l.Println("Status was not changed")
+	}
+	if res == true {
+		t.l.Println("Статус транзакции установлен: SUCCESS")
+	} else {
+		t.l.Println("Статус транзакции установлен: UNSUCCESS")
+	}
 }
-
-type KeyTransaction struct{}
 
 func (t *Transactions) MiddlewareAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -32,16 +32,17 @@ func main() {
 	putRouter.HandleFunc("/reject", tr.RejectTransaction)
 
 	protectedRouter := sm.Methods("PUT").Subrouter()
-	protectedRouter.HandleFunc("/changest", tr.ChangeTransactionStatus)
+	protectedRouter.HandleFunc("/changest", tr.ChangeTransactionStatusWS)
+	protectedRouter.HandleFunc("/changestatvs", tr.ChangeTransactionStatus)
 	protectedRouter.Use(tr.MiddlewareAuth)
 
 	s := &http.Server{
-		Addr:         ":9090",           // configure the bind address
-		Handler:      sm,                // set the default handler
-		ErrorLog:     l,                 // set the logger for the server
-		ReadTimeout:  5 * time.Second,   // max time to read request from the client
-		WriteTimeout: 10 * time.Second,  // max time to write response to the client
-		IdleTimeout:  120 * time.Second, // max time for connections using TCP Keep-Alive
+		Addr:         ":9090",           // Порт сервера
+		Handler:      sm,                // Хэндлеры
+		ErrorLog:     l,                 // Логи
+		ReadTimeout:  5 * time.Second,   // Таймаут запроса клиента
+		WriteTimeout: 10 * time.Second,  // Таймаут ответа клиенту
+		IdleTimeout:  120 * time.Second, // Таймаут соединения в простое
 	}
 
 	go func() {
@@ -61,6 +62,9 @@ func main() {
 	sig := <-c
 	log.Println("Got signal:", sig)
 
-	ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	ctx, err := context.WithTimeout(context.Background(), 30*time.Second)
+	if err != nil {
+		log.Println("Something went wrong with shutdown:", err)
+	}
 	s.Shutdown(ctx)
 }

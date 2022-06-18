@@ -112,6 +112,7 @@ func AddTransaction(t *Transaction) {
 		log.Fatal("Unable to add user")
 	}
 	defer insert.Close()
+	log.Println("Транзакция успешно добавлена")
 }
 
 func Reject(t *Transaction) error {
@@ -147,11 +148,12 @@ func Reject(t *Transaction) error {
 			panic(err)
 		}
 		log.Println(res.RowsAffected())
+		log.Println("Транзакция успешно отменена")
 		return nil
 	}
 }
 
-func StatusChange(t *Transaction) error {
+func StatusChange(t *Transaction) (bool, error) {
 	db, err := sql.Open("mysql", dbparams)
 	if err != nil {
 		log.Fatal("Connection to DB failed")
@@ -171,26 +173,70 @@ func StatusChange(t *Transaction) error {
 
 	if result[0].Status == "REJECTED" {
 		log.Println("Status cant be changed")
-		return err
+		return false, err
 	} else if result[0].Status == "SUCCESS" {
 		log.Println("Status cant be changed")
-		return err
+		return false, err
 	} else if result[0].Status == "UNSUCCESS" {
 		log.Println("Status cant be changed")
-		return err
+		return false, err
+	} else if result[0].Status == "NEW" {
+		res, err := db.Exec("UPDATE `transactions` SET `status` = ? WHERE `id` = ?", t.Status, t.Id)
+		if err != nil {
+			panic(err)
+		}
+		log.Println(res.RowsAffected())
+		return true, nil
+	} else {
+		res, err := db.Exec("UPDATE `transactions` SET `status` = ? WHERE `id` = ?", t.Status, t.Id)
+		if err != nil {
+			panic(err)
+		}
+		log.Println(res.RowsAffected())
+		return false, nil
+	}
+}
+
+func StatusChangeWS(t *Transaction) (bool, error) {
+	db, err := sql.Open("mysql", dbparams)
+	if err != nil {
+		log.Fatal("Connection to DB failed")
+	}
+	defer db.Close()
+
+	result := []TransactionStatus{}
+	check, err := db.Query("SELECT `status` FROM `transactions` WHERE `id` = ?", t.Id)
+	if err != nil {
+		log.Fatal("No such transaction")
+	}
+	for check.Next() {
+		var tr TransactionStatus
+		err = check.Scan(&tr.Status)
+		result = append(result, tr)
+	}
+
+	if result[0].Status == "REJECTED" {
+		log.Println("Status cant be changed")
+		return false, err
+	} else if result[0].Status == "SUCCESS" {
+		log.Println("Status cant be changed")
+		return false, err
+	} else if result[0].Status == "UNSUCCESS" {
+		log.Println("Status cant be changed")
+		return false, err
 	} else if result[0].Status == "NEW" {
 		res, err := db.Exec("UPDATE `transactions` SET `status` = ? WHERE `id` = ?", "SUCCES", t.Id)
 		if err != nil {
 			panic(err)
 		}
 		log.Println(res.RowsAffected())
-		return nil
+		return true, nil
 	} else {
 		res, err := db.Exec("UPDATE `transactions` SET `status` = ? WHERE `id` = ?", "UNSUCCESS", t.Id)
 		if err != nil {
 			panic(err)
 		}
 		log.Println(res.RowsAffected())
-		return nil
+		return false, nil
 	}
 }
