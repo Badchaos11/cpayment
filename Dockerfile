@@ -5,7 +5,10 @@ WORKDIR /app
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
+COPY main.go ./
+COPY handlers models
+COPY handlers handlers
 
-COPY *.go ./
+RUN go install ./
 
-EXPOSE 9090
+EXPOSE 5300
