@@ -22,3 +22,19 @@ func AddTransaction(t *Transaction) bool {
 	log.Println("Транзакция успешно добавлена")
 	return true
 }
+
+func AddTransactionFail(t *Transaction) bool {
+	db, err := sql.Open("mysql", dbparams)
+	if err != nil {
+		log.Fatal("Connection to DB failed")
+	}
+	defer db.Close()
+
+	insert, err := db.Query("INSERT INTO `transactions` (`userid`, `email`, `price`, `currency`, `status`) VALUES (?, ?, ?, ?, ?)", t.Userid, t.Email, t.Price, t.Currency, t.Status)
+	if err != nil {
+		log.Fatal("Unable to add user")
+	}
+	defer insert.Close()
+	log.Println("При добавлении транзакции произошла ошибка")
+	return true
+}

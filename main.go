@@ -27,6 +27,7 @@ func main() {
 
 	postRouter := sm.Methods("POST").Subrouter()
 	postRouter.HandleFunc("/create", tr.CreateTransaction)
+	postRouter.HandleFunc("/createfail", tr.CreateTransactionFail)
 
 	putRouter := sm.Methods("PUT").Subrouter()
 	putRouter.HandleFunc("/reject", tr.RejectTransaction)
