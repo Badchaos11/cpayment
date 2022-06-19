@@ -46,4 +46,4 @@ createdon - datetime, по умолчанию current timestamp;
 updatedon - datetime, по умолчанию current timestamp, on update current timestamp;
 status - varchar;
 
-Настройка базы данных производится в каталоге models, файл -  transactions.go, переменная - dbparams. В папке mysql находится файл для создания таблицы необходимой конфигурации, если что-то пойдёт не так при использовании docker-compose.
+Настройка параметров для подключения базы данных (пользователь, пароль, адрес, название базы данных) производится в каталоге models, файл -  transactions.go, переменная - dbparams. В папке mysql находится файл для создания таблицы необходимой конфигурации, если что-то пойдёт не так при использовании docker-compose.
