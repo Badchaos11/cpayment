@@ -1,14 +1,14 @@
-FROM golang:1.18
+FROM golang:1.18 AS build
 
-WORKDIR /app
+WORKDIR /go/app/cpayment
 
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 COPY main.go ./
-COPY handlers models
+COPY models models
 COPY handlers handlers
 
 RUN go install ./
 
-EXPOSE 5300
+EXPOSE 9090
