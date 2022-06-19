@@ -1,5 +1,5 @@
-DROP TABLE IF EXISTS `transactions`;
-CREATE TABLE `transactions` (
+DROP TABLE IF EXISTS transactions;
+CREATE TABLE transactions (
     id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     userid INTEGER NOT NULL,
     email VARCHAR(50) NOT NULL,
