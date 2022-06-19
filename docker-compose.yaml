@@ -10,7 +10,7 @@ services:
       MYSQL_USER: "badchaos"
       MYSQL_PASSWORD: "pe0038900"
   cpayment:
-    build: "."
+    build: "./app"
     command: "go run main.go"
     depends_on:
       - "mysql"
