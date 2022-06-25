@@ -7,8 +7,9 @@ import (
 	_ "github.com/go-sql-driver/mysql"
 )
 
+// Получение статуса одной транзакции
 func OneTransaction(id int) []TransactionStatus {
-	db, err := sql.Open("mysql", dbparams)
+	db, err := sql.Open("mysql", dbparams) //открытие соединения с БД
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
@@ -16,11 +17,11 @@ func OneTransaction(id int) []TransactionStatus {
 
 	result := []TransactionStatus{}
 
-	res, err := db.Query("SELECT `status` FROM `transactions` WHERE `id` = ?", id)
+	res, err := db.Query("SELECT `status` FROM `transactions` WHERE `id` = ?", id) // запрос к БД
 	if err != nil {
 		log.Fatal("No such transaction")
 	}
-	for res.Next() {
+	for res.Next() { // формирование сообщения результата
 		var tr TransactionStatus
 		err = res.Scan(&tr.Status)
 		result = append(result, tr)
@@ -29,8 +30,9 @@ func OneTransaction(id int) []TransactionStatus {
 	return result
 }
 
+// Получение всех транзакций по ID пользователя
 func AllTrasactionsId(userid int) Transactions {
-	db, err := sql.Open("mysql", dbparams)
+	db, err := sql.Open("mysql", dbparams) //открытие соединения с БД
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
@@ -38,12 +40,12 @@ func AllTrasactionsId(userid int) Transactions {
 
 	result := []Transaction{}
 
-	res, err := db.Query("SELECT * FROM `transactions` WHERE `userid` = ?", userid)
+	res, err := db.Query("SELECT * FROM `transactions` WHERE `userid` = ?", userid) // запрос к БД
 	if err != nil {
 		log.Fatal("No such user or transactions")
 	}
 
-	for res.Next() {
+	for res.Next() { // формирование сообщения результата
 		var tr Transaction
 		err = res.Scan(&tr.Id, &tr.Userid, &tr.Email, &tr.Price, &tr.Currency, &tr.CreatedOn, &tr.UpdatedOn, &tr.Status)
 		result = append(result, tr)
@@ -53,8 +55,9 @@ func AllTrasactionsId(userid int) Transactions {
 	return result
 }
 
+// Получение всех транзакций по Email
 func AllTransactionsEm(email string) Transactions {
-	db, err := sql.Open("mysql", dbparams)
+	db, err := sql.Open("mysql", dbparams) //открытие соединения с БД
 	if err != nil {
 		log.Fatal("Connection to DB failed")
 	}
@@ -62,12 +65,12 @@ func AllTransactionsEm(email string) Transactions {
 
 	result := []Transaction{}
 
-	res, err := db.Query("SELECT * FROM `transactions` WHERE `email` = ?", email)
+	res, err := db.Query("SELECT * FROM `transactions` WHERE `email` = ?", email) // запрос к БД
 	if err != nil {
 		log.Fatal("No such user or transactions")
 	}
 
-	for res.Next() {
+	for res.Next() { // формирование сообщения результата
 		var tr Transaction
 		err = res.Scan(&tr.Id, &tr.Userid, &tr.Email, &tr.Price, &tr.Currency, &tr.CreatedOn, &tr.UpdatedOn, &tr.Status)
 		result = append(result, tr)

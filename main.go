@@ -15,15 +15,15 @@ import (
 func main() {
 
 	l := log.New(os.Stdout, "Constanta Payment Gateway ", log.LstdFlags)
-
+	// Создание логера
 	tr := handlers.NewTransactions(l)
-
+	// Создание роутера
 	sm := mux.NewRouter()
-
+	// Регистрация отдельных роутеров на различные виды HTTP методов
 	getRouter := sm.Methods("GET").Subrouter()
-	getRouter.HandleFunc("/onetrbid/{id}", tr.GetOneById)
-	getRouter.HandleFunc("/alltrbid/{userid}", tr.GetAllById)
-	getRouter.HandleFunc("/alltrbem/{email}", tr.GetAllByEmail)
+	getRouter.HandleFunc("/onetransaction/{id}", tr.GetOneById)
+	getRouter.HandleFunc("/allbyuserid/{userid}", tr.GetAllById)
+	getRouter.HandleFunc("/allbyemail/{email}", tr.GetAllByEmail)
 
 	postRouter := sm.Methods("POST").Subrouter()
 	postRouter.HandleFunc("/create", tr.CreateTransaction)
@@ -33,10 +33,9 @@ func main() {
 	putRouter.HandleFunc("/reject", tr.RejectTransaction)
 
 	protectedRouter := sm.Methods("PUT").Subrouter()
-	protectedRouter.HandleFunc("/changest", tr.ChangeTransactionStatusWS)
-	protectedRouter.HandleFunc("/changestatvs", tr.ChangeTransactionStatus)
+	protectedRouter.HandleFunc("/changestatus", tr.ChangeTransactionStatus)
 	protectedRouter.Use(tr.MiddlewareAuth)
-
+	// Настрйока сервера
 	s := &http.Server{
 		Addr:         ":9090",           // Порт сервера
 		Handler:      sm,                // Хэндлеры
@@ -45,7 +44,7 @@ func main() {
 		WriteTimeout: 10 * time.Second,  // Таймаут ответа клиенту
 		IdleTimeout:  120 * time.Second, // Таймаут соединения в простое
 	}
-
+	// Запуск сервера
 	go func() {
 		l.Println("Starting server on port 9090")
 
@@ -55,7 +54,7 @@ func main() {
 			os.Exit(1)
 		}
 	}()
-
+	// Отключение
 	c := make(chan os.Signal, 1)
 	signal.Notify(c, os.Interrupt)
 	signal.Notify(c, os.Kill)
