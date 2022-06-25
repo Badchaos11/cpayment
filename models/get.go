@@ -42,7 +42,7 @@ func AllTrasactionsId(userid int) Transactions {
 
 	res, err := db.Query("SELECT * FROM `transactions` WHERE `userid` = ?", userid) // запрос к БД
 	if err != nil {
-		log.Fatal("No such user or transactions")
+		log.Println("No such user or transactions")
 	}
 
 	for res.Next() { // формирование сообщения результата

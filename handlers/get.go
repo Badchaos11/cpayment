@@ -35,8 +35,8 @@ func (t *Transactions) GetAllById(w http.ResponseWriter, r *http.Request) {
 	}
 	trs := models.AllTrasactionsId(id) // запрос к БД
 	for i := 0; i < len(trs); i++ {    // вывод всех результатов в цикле
-		t.l.Println(trs[i])                          // вывод результата в консоль
-		fmt.Fprint(w, "Данные транзакции: ", trs[i]) // вывод результата в ответ на запрос
+		t.l.Println(trs[i])                                  // вывод результата в консоль
+		fmt.Fprint(w, "Данные транзакции: ", trs[i], "\r\n") // вывод результата в ответ на запрос
 	}
 }
 
